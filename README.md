@@ -9,6 +9,11 @@ Repo for Tanay's Project
         </a><br/>
         <small><b>Tanay Reddy</b></small>
       </td>
+      <td2 align="center">
+        <a href="https://github.com/emilyfeuer">
+        </a><br/>
+        <small><b>Emily Feuer</b></small>
+      </td2>
     </tr>
    </tbody>
 </table>
