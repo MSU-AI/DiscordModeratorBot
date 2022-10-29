@@ -41,5 +41,6 @@ jobs:
       run: |
         python -m venv .env
         source .env/bin/activate
-        py .github/chat_toxicity_detector.py
+    - name: Run Python Script
+      run: python .github/workflows/chat_toxicity_detector.py
             
