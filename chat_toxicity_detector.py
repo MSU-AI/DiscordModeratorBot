@@ -4,7 +4,8 @@ from googleapiclient import discovery
 import json
 import os
 
-API_KEY = ''
+API_KEY = ""
+token = ""
 
 intents = discord.Intents()
 intents.message_content = True
@@ -30,6 +31,7 @@ async def on_ready():
 async def on_message(message):
 
     button = Button(label="Delete Message", style=discord.ButtonStyle.green, emoji="🗑️")
+    button2 = Button(label="Message Deleted", style=discord.ButtonStyle.green, emoji="✅", disabled=True)
     view = View()
     view.add_item(button)
 
@@ -40,7 +42,7 @@ async def on_message(message):
     msg = message.content
     gld = message.guild
     print(msg)
-    channel1 = client.get_channel(1030517807336673320)
+    channel1 = client.get_channel(cid)
     channel2 = message.channel
     analyze_request = {
     'comment': { 'text': msg },
@@ -61,10 +63,13 @@ async def on_message(message):
 
     async def button_callback(interaction):
       await message.delete()
+      view.clear_items()
+      view.add_item(button2)
+      await interaction.response.edit_message(view = view, embed=embed2)
     button.callback = button_callback
-    if value > 0.7:
+    if value > 0.65:
         await message.add_reaction('🚩')
-        await channel1.send(embed=embed2, view=view)
+        await channel1.send(embed=embed2, view=view)    
     
 
 @client.slash_command(name="hi")
@@ -72,4 +77,5 @@ async def hey(ctx):
   await ctx.send("Hey!!")
 
 
-client.run('')
+client.run(token)
+

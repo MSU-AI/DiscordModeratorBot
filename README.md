@@ -1,5 +1,9 @@
 # Discord Moderator Bot
 
+## Description
+
+A Multi-feature Discord Bot with of the main goals behind it being the ability to use Natural Language Processing to make conversing in Discord a safer and toxicity-free place, to actively check when questions related to the club are asked in chat, detecting these questions and answering them using a large dataset of information regarding the AI Club and finally a simple but efficient system of tracking member activity and displaying this data in a descriptive, easy-to-read and informative manner.
+
 ## Members
 <table>
   <tbody>
@@ -50,5 +54,7 @@
     </tr>
    </tbody>
 </table>
+
+
 
 
