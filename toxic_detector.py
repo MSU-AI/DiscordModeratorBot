@@ -5,8 +5,8 @@ from googleapiclient import discovery
 import json
 import os
 
-API_KEY = "AIzaSyDbyDAhqvWokHXQrDk024syXwFA9wzGuCQ"
-token = "MTAzMDk5ODgxNjU4NzAwNTk4Mw.GiITsB.7J_mORsMVLTXloYRbh5QOX0gS1gOUKFk9ytXX4"
+API_KEY = ""
+token = ""
 cid = 1030517807336673320
 mid = 1041513715343818752
 login_info = ["localhost", "root", "password"] #in the future, I think we can implement some kind of login
