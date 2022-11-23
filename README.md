@@ -73,7 +73,7 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
   <th>Pycord (Discord)</th>
   <td>
 
-  `py -3 -m pip install -U py-cord`
+  `py -3 -m pip install py-cord`
 
   </td>
   </tr>
