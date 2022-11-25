@@ -1,5 +1,5 @@
 import discord
-from toxicity_database import *
+from toxic_database import *
 from discord.ui import Button, View
 from googleapiclient import discovery
 from dotenv import load_dotenv
