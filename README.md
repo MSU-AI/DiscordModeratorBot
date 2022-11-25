@@ -55,5 +55,45 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
    </tbody>
 </table>
 
+## Usage
 
+### 1. Creating a Virtual Enviroment
+- Inside your directory, run `python -m venv .env` to make your virtual environment
+- To Activate the environment run either of the commands below depending on your OS
+  - For Linux or MacOS use `source .env/bin/activate`
+  - For Windows use `.env/Scripts/activate`
+- Enter your API Keys for Discord and PerspectiveAPI and run the code
+- Next install the following dependencies
+  - <table>
+  <tr>
+  <th>Dependency</th>
+  <th>Command</th>
+  </tr>
+  <tr>
+  <th>Pycord (Discord)</th>
+  <td>
+
+  `py -3 -m pip install py-cord`
+
+  </td>
+  </tr>
+  <tr>
+  <td>Google API</td>
+  <td>
+
+  `py -3 -m pip install google-api-python-client`
+
+  </td>
+  </tr>
+  <tr>
+  <td>MySQL</td>
+  <td>
+
+  `pip install mysql-connector-python`
+
+  </td>
+  </tr>
+  </table>
+  
+- Run the code
 
