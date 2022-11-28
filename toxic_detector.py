@@ -1,158 +1,112 @@
 import discord
-from toxic_database import *
 from discord.ui import Button, View
 from googleapiclient import discovery
-from dotenv import load_dotenv
-import json
-import os
+from toxic_database import *
 
-# Getting all secrets
-
-load_dotenv()
-
-API_KEY = os.getenv("API_KEY")
-token = os.getenv("token")
-cid = os.getenv("cid")
-
-host = os.getenv("host")
-user = os.getenv("username")
-pwd = os.getenv("password")
-
-# Initializing Database
-
-login_info = [host, user, pwd] #in the future, I think we can implement some kind of login
-db_name = user
-creation = False
-
-if creation == False:
-  try:
-    connection = create_db_connection(login_info[0], login_info[1], login_info[2], db_name)
-    create_setting_table(connection)
-    create_table(connection)
-    creation = True
-  except:
-    creation = False
-
-# Giving the bot Intents
-
-intents = discord.Intents()
-intents.message_content = True
-intents.messages = True
-intents.guilds = True
-
-client = discord.Bot(command_prefix="+", intents=intents)
-
-# Initializing Perspective API
-
-ai_client = discovery.build(
-  "commentanalyzer",
-  "v1alpha1",
-  developerKey=API_KEY,
-  discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-  static_discovery=False,
-)
-
-# Succesful Run Message
-
-@client.event
-async def on_ready():
-    print("We have logged in as {0.user}".format(client))
-
-@client.event
-async def on_message(message):
-    
-    button = Button(label="Delete Message", style=discord.ButtonStyle.green, emoji="🗑️")
-    button2 = Button(label="Message Deleted", style=discord.ButtonStyle.green, emoji="✅", disabled=True)
-    view = View()
-    view.add_item(button)
-
-
-    button3 = Button(label="Ban", style=discord.ButtonStyle.red, emoji="🔨")
-    view2 = View()
-    view2.add_item(button3)
-
-    if message.author == client.user:
-        return
-
-    usr = message.author
-    msg = message.content
-    gld = message.guild
-
-    print(msg)
-    channel1 = client.get_channel(cid)
-    channel2 = message.channel
-
+def analyze_msg(ai_client, msg):
     analyze_request = {
     'comment': { 'text': msg },
     'requestedAttributes': {'SEVERE_TOXICITY': {}}
     }
-
     response = ai_client.comments().analyze(body=analyze_request).execute()
     print(response)
     value = response['attributeScores']['SEVERE_TOXICITY']['summaryScore']['value']
+    return value
 
+def construct_buttons():
+    button = Button(label="Delete Message", style=discord.ButtonStyle.green, emoji="🗑️")
+    button_v2 = Button(label="Message Deleted", style=discord.ButtonStyle.green, emoji="✅", disabled=True)
+    button2 = Button(label="Forgive", style=discord.ButtonStyle.green, emoji="🥺")
+    button2_v2 = Button(label="Forgiven", style=discord.ButtonStyle.green, emoji="✅", disabled=True)
+    view = View()
+    view.add_item(button)
+    view.add_item(button2)
+
+    button4 = Button(label="Ban", style=discord.ButtonStyle.red, emoji="🔨")
+    button5 = Button(label="Kick", style=discord.ButtonStyle.red, emoji="🦶")
+    button6 = Button(label="Mute", style=discord.ButtonStyle.red, emoji="🔇")
+    view2 = View()
+    view2.add_item(button6)
+    view2.add_item(button5)
+    view2.add_item(button4)
+    return button, button_v2, button2, button2_v2, button4, view, view2
+
+def construct_embeds(usr, channel2, message, msg, value, gld, ofs, limit):
     embed2 = discord.Embed(
             title=f'{usr.name} just sent a potentially harmful message',
             description=f"User ID: `{usr.id}`")
     embed2.add_field(name=f"Contents:", value=f"```{msg}```")
     embed2.add_field(name=f"Score:", value=f"```{value}```")
+    embed2.add_field(name=f"Number of Offenses:", value=f"```{ofs+1}```")
     embed2.add_field(name=f"Channel:", value=f"{channel2.mention}")
     embed2.add_field(name=f"Message Link:", value=f"https://discord.com/channels/{gld.id}/{channel2.id}/{message.id}")
 
     embed3 = discord.Embed(
-            title=f'{usr.name} has gone past the offence limit of 2',
+            title=f'{usr.name} has hit the offence limit of {limit}',
             description=f"User ID: `{usr.id}`")
     embed3.add_field(name=f"Last Message:", value=f"```{msg}```")
     embed3.add_field(name=f"Score:", value=f"```{value}```")
-    embed3.add_field(name=f"Offenses:", value="2")
+    embed3.add_field(name=f"Offenses:", value=f"{ofs+1}")
     embed3.add_field(name=f"Message Link:", value=f"https://discord.com/channels/{gld.id}/{channel2.id}/{message.id}")
 
+    return embed2, embed3
+
+async def execute_operation(client, ai_client, message, connection, current_settings, cid):
+    usr = message.author
+    msg = message.content
+    channel1 = client.get_channel(cid)
+    gld = message.guild
+    channel2 = message.channel
+
+    print(msg)
+
+    value = analyze_msg(ai_client, msg)
+
+    offense = get_offenses(connection, usr)
+    if len(offense) > 0:
+        ofs = int(offense[0][0])
+    else:
+        ofs = 0
+
+    sensitivity = current_settings[0][2]
+    limit = current_settings[0][1]
+    print(f"The LIMIT IS {limit}")
+    print(f"The number of OFS is {ofs}")
+
+    embed2, embed3 = construct_embeds(usr, channel2, message, msg, value, gld, ofs, limit)
+    button, button_v2, button2, button2_v2, button4, view, view2 = construct_buttons()
+
+    
     async def button_callback(interaction):
-      await message.delete()
-      view.clear_items()
-      view.add_item(button2)
-      await interaction.response.edit_message(view = view, embed=embed2)
+        await message.delete()
+        view.remove_item(button)
+        view.add_item(button_v2)
+        await interaction.response.edit_message(view = view, embed=embed2)
 
+    async def button_callback2(interaction):
+        sub_offense_count(usr, connection, ofs)
+        view.remove_item(button2)
+        view.add_item(button2_v2)
+        await interaction.response.edit_message(view = view, embed=embed2)
+
+    async def button_callback3(interaction):
+        usr.ban()
+        await interaction.response.edit_message(view = view2, embed=embed3)
+
+    button2.callback = button_callback2
     button.callback = button_callback
+    button4.callback = button_callback3
 
-    if value > 0.5:  
+    if value >= sensitivity:
+        if len(offense) > 0:
+            add_offense_count(usr, connection, ofs)
+        else: 
+            insert_new_user(usr, connection)
+
         await message.add_reaction('🚩')
         await channel1.send(embed=embed2, view=view)
 
-        # Code for over offenses 
-        # await channel1.send(embed=embed3, view=view2)
-
-        value = get_offenses(connection, usr)
-
-        # Gets offenses and checks if ir exists (length is over 0)
-
-        if len(value) > 0:
-
-          # Assigns the number of offenses to a variable 
-
-          ofs = int(value[0][0])
-
-          # Updates offense count based off that variable
-
-          update_offense_count(usr, connection, ofs)
-        else:
-
-          # If no offense, adds user to db and assigns a value of 1 offense
-          
-          insert_new_user(usr, connection)
-
-
-@client.slash_command(name="settings")
-async def settings(ctx):
-  await ctx.send("Hi")
-
-  # Enter Code for Settings...
-  
-
-@client.slash_command(name="hi")
-async def hey(ctx):
-  await ctx.send("Hey!!")
-
-
-client.run(token)
-
+        if ofs+1 >= limit:
+            await channel1.send(embed=embed3, view=view2)
+        
+        
