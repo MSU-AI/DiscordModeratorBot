@@ -108,5 +108,5 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
   
   
   
-- Run the code
+- Run `main.py`
 
