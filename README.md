@@ -73,7 +73,7 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
   <th>Pycord (Discord)</th>
   <td>
 
-  `py -3 -m pip install py-cord`
+  `pip install py-cord`
 
   </td>
   </tr>
@@ -81,7 +81,7 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
   <td>Google API</td>
   <td>
 
-  `py -3 -m pip install google-api-python-client`
+  `pip install google-api-python-client`
 
   </td>
   </tr>
@@ -93,7 +93,20 @@ A Multi-feature Discord Bot with of the main goals behind it being the ability t
 
   </td>
   </tr>
+  
+  <tr>
+  <td>NLTK</td>
+  <td>
+
+  `pip install nltk`
+
+  </td>
+  </tr>
+  
+  
   </table>
+  
+  
   
 - Run the code
 
