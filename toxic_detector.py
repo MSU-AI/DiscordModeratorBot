@@ -8,10 +8,8 @@ import os
 
 # Getting all secrets
 
-load_dotenv()
-
-API_KEY = "AIzaSyDbyDAhqvWokHXQrDk024syXwFA9wzGuCQ"
-token = "MTAzMDUxMTgwNDc0MjM4MTY2OA.Gumscr.hC1yolMPFfuBkvRq5BiXpn536_-WLNiAe77euw"
+API_KEY = ""
+token = ""
 
 #User will need to alter "login_info" to their own desired info
 login_info = ["localhost", "root", "0210"] 
